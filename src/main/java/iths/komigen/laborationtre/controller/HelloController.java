@@ -42,7 +42,8 @@ public class HelloController {
 
     public void initialize() {
         sizeButton.setItems(shapeSizes);
-        sizeButton.setValue(SMALL); //optional
+        System.out.println(sizeButton.getValue());
+        //sizeButton.setValue(SMALL); //optional
 
         shapeButton.setItems(shapes);
         shapeButton.setValue("Circle"); //optional
@@ -65,15 +66,8 @@ public class HelloController {
         }
     }
 
-    //Put while loop that doesnt break unless you clicked on canvas? Either blank or on shape
+
     public void selectShape(MouseEvent mouseEvent) {
-
-
-
-
-
-
-
 
         selected = true;
 
@@ -85,8 +79,7 @@ public class HelloController {
 
     public void canvasClicked(MouseEvent mouseEvent) {
 
-        double mx = mouseEvent.getX();
-        double my = mouseEvent.getY();
+
 
 
         if (selected == false) {
@@ -99,14 +92,10 @@ public class HelloController {
 
             new Thread(() -> {
                 Platform.runLater(() ->
-                        checkTheArea(mx,my));
+                        checkTheArea(mouseEvent));
             }).start();
 
 
-            /*new Thread(() -> {
-                Platform.runLater(() ->
-                        checkShapeColorOnCanvas(mouseEvent.getX(), mouseEvent.getY()));
-            }).start();*/
 
         }
 
@@ -114,54 +103,16 @@ public class HelloController {
         selected = false;
 
 
-        /*if(sizeButton.getValue().equals(SMALL)){
-            smallSquare(mouseEvent);
-        }
-        if(sizeButton.getValue().equals(MEDIUM)){
-            mediumSquare(mouseEvent);
-        }
-        if(sizeButton.getValue().equals(LARGE)){
-            largeSquare(mouseEvent);
-        }*/
 
     }
 
-    public void checkTheArea(double x, double y) {
+    public void checkTheArea(MouseEvent mouseEvent) {
 
         for (int i = shapesOnCanvas.size() - 1; i >= 0 ; i--) {
-            shapesOnCanvas.get(i).checkArea(x,y);
+            shapesOnCanvas.get(i).checkArea(mouseEvent.getX(),mouseEvent.getY());
         }
 
     }
-
-
-    private void checkShapeColorOnCanvas(double x, double y) {
-
-
-        for (int i = shapesOnCanvas.size() - 1; i >= 0; i--) {
-
-
-
-            if ((((x > shapesOnCanvas.get(i).getPosition().x()) && (x <= shapesOnCanvas.get(i).getPosition().x() + 75))
-                    || ((x < shapesOnCanvas.get(i).getPosition().x()) && (x >= shapesOnCanvas.get(i).getPosition().x() - 75)))
-                    && (((y > shapesOnCanvas.get(i).getPosition().y()) && (y <= shapesOnCanvas.get(i).getPosition().y() + 75))
-                    || ((y < shapesOnCanvas.get(i).getPosition().y()) && (y >= shapesOnCanvas.get(i).getPosition().y() - 75)))) {
-                if (shapesOnCanvas.get(i).getSize().equals(LARGE)) {
-                    System.out.println("BIG HIT");
-                } else if ((shapesOnCanvas.get(i).getPosition().x() >= x - 100) && (shapesOnCanvas.get(i).getPosition().y() >= y - 100)) {
-                    if (shapesOnCanvas.get(i).getSize().equals(MEDIUM)) {
-                        System.out.println("MEDIUM HIT");
-                    }
-                } else if ((shapesOnCanvas.get(i).getPosition().x() >= x - 50) && (shapesOnCanvas.get(i).getPosition().y() >= y - 50)) {
-                    if (shapesOnCanvas.get(i).getSize().equals(SMALL)) {
-                        System.out.println("SMALL HIT");
-                    }
-                }
-            }
-
-        }
-    }
-
 
 
 
@@ -244,20 +195,25 @@ public class HelloController {
 
     public void makeShape(MouseEvent mouseEvent) {
 
-        if (shapeButton.getValue().equals("Circle")) {
-            switch (sizeButton.getValue()) {
-                case SMALL -> makeCircle(mouseEvent.getX(), mouseEvent.getY(), SMALL, colorButton.getValue());
-                case MEDIUM -> makeCircle(mouseEvent.getX(), mouseEvent.getY(), MEDIUM, colorButton.getValue());
-                case LARGE -> makeCircle(mouseEvent.getX(), mouseEvent.getY(), LARGE, colorButton.getValue());
+        if((sizeButton.getValue() != null) && (shapeButton.getValue() != null)) {
+
+            if (shapeButton.getValue().equals("Circle")) {
+                switch (sizeButton.getValue()) {
+                    case SMALL -> makeCircle(mouseEvent.getX(), mouseEvent.getY(), SMALL, colorButton.getValue());
+                    case MEDIUM -> makeCircle(mouseEvent.getX(), mouseEvent.getY(), MEDIUM, colorButton.getValue());
+                    case LARGE -> makeCircle(mouseEvent.getX(), mouseEvent.getY(), LARGE, colorButton.getValue());
+                }
             }
-        }
-        if (shapeButton.getValue().equals("Square")) {
-            switch (sizeButton.getValue()) {
-                case SMALL -> makeSquare(mouseEvent.getX(), mouseEvent.getY(), SMALL, colorButton.getValue());
-                case MEDIUM -> makeSquare(mouseEvent.getX(), mouseEvent.getY(), MEDIUM, colorButton.getValue());
-                case LARGE -> makeSquare(mouseEvent.getX(), mouseEvent.getY(), LARGE, colorButton.getValue());
+            if (shapeButton.getValue().equals("Square")) {
+                switch (sizeButton.getValue()) {
+                    case SMALL -> makeSquare(mouseEvent.getX(), mouseEvent.getY(), SMALL, colorButton.getValue());
+                    case MEDIUM -> makeSquare(mouseEvent.getX(), mouseEvent.getY(), MEDIUM, colorButton.getValue());
+                    case LARGE -> makeSquare(mouseEvent.getX(), mouseEvent.getY(), LARGE, colorButton.getValue());
+                }
             }
+
         }
+
 
     }
 
@@ -278,9 +234,6 @@ public class HelloController {
 
     }
 
-    public void mouseLocation(MouseEvent mouseEvent) {
-        //System.out.println("ej canvas" + mouseEvent.getX());
-    }
 
 
 

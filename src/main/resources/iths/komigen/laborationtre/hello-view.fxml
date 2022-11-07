@@ -6,9 +6,9 @@
 <?import javafx.scene.layout.*?>
 
 
-<StackPane fx:id="stackPane" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="iths.komigen.laborationtre.controller.HelloController">
+<StackPane xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="iths.komigen.laborationtre.controller.HelloController">
    <children>
-      <AnchorPane onMouseClicked="#mouseLocation" prefHeight="500.0" prefWidth="600.0">
+      <AnchorPane prefHeight="500.0" prefWidth="600.0">
          <children>
             <Canvas fx:id="canvas" height="450.0" onMouseClicked="#canvasClicked" width="600.0" />
             <HBox alignment="CENTER" layoutY="450.0" prefHeight="50.0" prefWidth="600" spacing="70.0">

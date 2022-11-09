@@ -1,53 +1,49 @@
 package iths.komigen.laborationtre.model;
 
-import javafx.scene.Node;
+import javafx.beans.property.*;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Shape;
 
 import java.util.Objects;
 
-import static iths.komigen.laborationtre.model.ShapeSize.SMALL;
-
-public abstract class Shapes extends Shape {
-    @Override
-    public Node getStyleableNode() {
-        return super.getStyleableNode();
-    }
-
+public abstract class Shapes {
     private String name;
 
     private Position position;
 
-    private ShapeSize size;
+    private StringProperty shapeSize;
 
-    private Color color;
+    private Property<Color> color;
 
-    public Shapes(Position position, ShapeSize size, Color color) {
+
+    public Shapes(Position position) {
         this.position = position;
-        this.size = size;
-        this.color = color;
-    }
-
-    @Override
-    public String toString() {
-        return position + ", size= " + size + ", color= " + color;
-    }
-
-
-    public ShapeSize getSize() {
-        return size;
-    }
-
-    public void setSize(ShapeSize size) {
-        this.size = size;
+        shapeSize = new SimpleStringProperty();
+        color = new SimpleObjectProperty<>();
     }
 
     public Color getColor() {
+        return color.getValue();
+    }
+
+    public Property<Color> colorProperty() {
         return color;
     }
 
     public void setColor(Color color) {
-        this.color = color;
+        this.color.setValue(color);
+    }
+
+
+    public String getShapeSize() {
+        return shapeSize.get();
+    }
+
+    public StringProperty shapeSizeProperty() {
+        return shapeSize;
+    }
+
+    public void setShapeSize(String shapeSize) {
+        this.shapeSize.set(shapeSize);
     }
 
     public String getName() {
@@ -66,26 +62,30 @@ public abstract class Shapes extends Shape {
         this.position = position;
     }
 
+
+    @Override
+    public String toString() {
+        return "Shapes{" +
+                "position=" + position +
+                ", size=" + shapeSize.getValue() +
+                ", color=" + color +
+                '}';
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof Shapes shapes)) return false;
-        return Objects.equals(name, shapes.name);
+        if (o == null || getClass() != o.getClass()) return false;
+        Shapes shapes = (Shapes) o;
+        return Objects.equals(getName(), shapes.getName()) && Objects.equals(getPosition(), shapes.getPosition()) && Objects.equals(getShapeSize(), shapes.getShapeSize()) && Objects.equals(getColor(), shapes.getColor());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(name);
+        return Objects.hash(getName(), getPosition(), getShapeSize(), getColor());
     }
 
+    public abstract boolean checkArea(double x, double y);
 
-    public boolean checkArea(double x, double y) {
-        boolean answer = false;
-
-
-
-
-        return answer;
-    }
 
 }

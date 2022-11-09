@@ -1,14 +1,59 @@
 package iths.komigen.laborationtre.model;
 
 
+import javafx.beans.property.Property;
+import javafx.beans.property.StringProperty;
 import javafx.scene.paint.Color;
 
 public class Square extends Shapes{
 
     private String name = "Square";
 
-    public Square(Position position, ShapeSize size, Color color) {
-        super(position, size, color);
+
+    public Square(Position position) {
+        super(position);
+    }
+
+    @Override
+    public String getShapeSize() {
+        return super.getShapeSize();
+    }
+
+    @Override
+    public StringProperty shapeSizeProperty() {
+        return super.shapeSizeProperty();
+    }
+
+    @Override
+    public void setShapeSize(String shapeSize) {
+        super.setShapeSize(shapeSize);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        return super.equals(o);
+    }
+
+    @Override
+    public Color getColor() {
+        return super.getColor();
+    }
+
+    @Override
+    public Property<Color> colorProperty() {
+        return super.colorProperty();
+    }
+
+    @Override
+    public void setColor(Color color) {
+        super.setColor(color);
+    }
+
+
+
+    @Override
+    public void setName(String name) {
+        super.setName(name);
     }
 
     @Override
@@ -26,24 +71,11 @@ public class Square extends Shapes{
         super.setPosition(position);
     }
 
-    @Override
-    public ShapeSize getSize() {
-        return super.getSize();
-    }
+
 
     @Override
-    public void setSize(ShapeSize size) {
-        super.setSize(size);
-    }
-
-    @Override
-    public Color getColor() {
-        return super.getColor();
-    }
-
-    @Override
-    public void setColor(Color color) {
-        super.setColor(color);
+    public int hashCode() {
+        return super.hashCode();
     }
 
     @Override
@@ -52,22 +84,36 @@ public class Square extends Shapes{
     }
 
     public boolean checkArea(double x, double y) {
+
         boolean answer = false;
-        //medelpunkg (a,b)
-        // radie 75
+
+        int squareArea = 0;
+
+        if(super.getShapeSize().equals("SMALL")) {
+            squareArea = 25;
+        }
+        if(super.getShapeSize().equals("MEDIUM")) {
+            squareArea = 50;
+        }
+        if(super.getShapeSize().equals("LARGE")) {
+            squareArea = 75;
+        }
 
 
-        //(x-a)^2 + (y-b)^2 = r2
+        if(((((x >= super.getPosition().x()) && (x <= super.getPosition().x() + squareArea))
+                || ((x <= super.getPosition().x()) && (x >= super.getPosition().x() - squareArea)))
+                && (((y >= super.getPosition().y()) && (y <= super.getPosition().y() + squareArea))
+                || ((y <= super.getPosition().y()) && (y >= super.getPosition().y() - squareArea)))))
+        {
 
-        if(Math.pow((x - super.getPosition().x()), 2) + Math.pow((y - super.getPosition().y()) , 2) == 75*75) {
             System.out.println("YESYESYES");
             answer = true;
         }
 
 
-
         return answer;
     }
+
 
 
 }

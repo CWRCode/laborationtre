@@ -5,10 +5,9 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-
 <StackPane xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="iths.komigen.laborationtre.controller.HelloController">
    <children>
-      <AnchorPane prefHeight="500.0" prefWidth="600.0">
+      <AnchorPane fx:id="anchorPane" prefHeight="500.0" prefWidth="600.0" >
          <children>
             <Canvas fx:id="canvas" height="450.0" onMouseClicked="#canvasClicked" width="600.0" />
             <HBox alignment="CENTER" layoutY="450.0" prefHeight="50.0" prefWidth="600" spacing="70.0">
@@ -16,8 +15,8 @@
                   <HBox alignment="CENTER_LEFT" spacing="5.0">
                      <children>
                         <ChoiceBox fx:id="shapeButton" prefWidth="150.0" />
-                        <ChoiceBox fx:id="sizeButton" prefWidth="150.0" />
-                        <ColorPicker fx:id="colorButton" />
+                        <ChoiceBox fx:id="sizeButton" onAction="#sizePicker" prefWidth="150.0" />
+                        <ColorPicker fx:id="colorButton" onAction="#colorPicker" />
                      </children>
                      <padding>
                         <Insets left="5.0" />
@@ -25,11 +24,11 @@
                   </HBox>
                   <HBox alignment="CENTER_RIGHT" prefHeight="50.0" prefWidth="215.0" spacing="10.0">
                      <children>
-                        <Button fx:id="undoButton" mnemonicParsing="false" text="Undo" />
+                        <Button fx:id="undoButton" mnemonicParsing="false" text="Undo" onMouseClicked="#undoClicked" />
                         <Button fx:id="selectButton" mnemonicParsing="false" onMouseClicked="#selectShape" text="Select" />
                      </children>
                      <padding>
-                        <Insets right="40.0" />
+                        <Insets right="35.0" />
                      </padding>
                   </HBox>
                </children>

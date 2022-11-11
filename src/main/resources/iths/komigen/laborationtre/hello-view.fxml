@@ -7,7 +7,7 @@
 
 <StackPane xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="iths.komigen.laborationtre.controller.HelloController">
    <children>
-      <AnchorPane fx:id="anchorPane" prefHeight="500.0" prefWidth="600.0" >
+      <AnchorPane prefHeight="500.0" prefWidth="600.0">
          <children>
             <Canvas fx:id="canvas" height="450.0" onMouseClicked="#canvasClicked" width="600.0" />
             <HBox alignment="CENTER" layoutY="450.0" prefHeight="50.0" prefWidth="600" spacing="70.0">
@@ -22,14 +22,18 @@
                         <Insets left="5.0" />
                      </padding>
                   </HBox>
-                  <HBox alignment="CENTER_RIGHT" prefHeight="50.0" prefWidth="215.0" spacing="10.0">
+                  <HBox alignment="CENTER_RIGHT" prefHeight="50.0" prefWidth="258.0" spacing="5.0">
                      <children>
-                        <Button fx:id="undoButton" mnemonicParsing="false" text="Undo" onMouseClicked="#undoClicked" />
+                        <Button fx:id="undoButton" mnemonicParsing="false" onMouseClicked="#undoClicked" text="Undo">
+                           <HBox.margin>
+                              <Insets />
+                           </HBox.margin></Button>
                         <Button fx:id="selectButton" mnemonicParsing="false" onMouseClicked="#selectShape" text="Select" />
+                        <Button fx:id="saveButton" onMouseClicked="#saveProgram" mnemonicParsing="false" text="Save" />
                      </children>
-                     <padding>
-                        <Insets right="35.0" />
-                     </padding>
+                     <HBox.margin>
+                        <Insets />
+                     </HBox.margin>
                   </HBox>
                </children>
             </HBox>

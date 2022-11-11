@@ -14,6 +14,10 @@ public class Square extends Shapes{
         super(position);
     }
 
+    public Square(Position position, StringProperty shapeSize, Property<Color> color) {
+        super(position, shapeSize, color);
+    }
+
     @Override
     public String getShapeSize() {
         return super.getShapeSize();
@@ -91,11 +95,9 @@ public class Square extends Shapes{
 
         if(super.getShapeSize().equals("SMALL")) {
             squareArea = 25;
-        }
-        if(super.getShapeSize().equals("MEDIUM")) {
+        }else if(super.getShapeSize().equals("MEDIUM")) {
             squareArea = 50;
-        }
-        if(super.getShapeSize().equals("LARGE")) {
+        }else if(super.getShapeSize().equals("LARGE")) {
             squareArea = 75;
         }
 
@@ -105,8 +107,6 @@ public class Square extends Shapes{
                 && (((y >= super.getPosition().y()) && (y <= super.getPosition().y() + squareArea))
                 || ((y <= super.getPosition().y()) && (y >= super.getPosition().y() - squareArea)))))
         {
-
-            System.out.println("YESYESYES");
             answer = true;
         }
 

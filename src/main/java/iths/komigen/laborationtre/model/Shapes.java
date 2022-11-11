@@ -21,6 +21,12 @@ public abstract class Shapes {
         color = new SimpleObjectProperty<>();
     }
 
+    public Shapes(Position position, StringProperty shapeSize, Property<Color> color) {
+        this.position = position;
+        this.shapeSize = shapeSize;
+        this.color = color;
+    }
+
     public Color getColor() {
         return color.getValue();
     }
@@ -86,6 +92,19 @@ public abstract class Shapes {
     }
 
     public abstract boolean checkArea(double x, double y);
+
+    public int sizeToInt(){
+        int circleArea = 0;
+
+        if(this.getShapeSize().equals("SMALL")) {
+            circleArea = 25;
+        }else if(this.getShapeSize().equals("MEDIUM")) {
+            circleArea = 50;
+        }else if(this.getShapeSize().equals("LARGE")) {
+            circleArea = 75;
+        }
+        return circleArea;
+    }
 
 
 }

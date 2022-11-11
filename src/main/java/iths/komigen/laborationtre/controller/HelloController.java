@@ -7,14 +7,23 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.ChoiceBox;
+import javafx.scene.control.ColorPicker;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
+import javafx.stage.FileChooser;
+import javafx.stage.Stage;
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 
 public class HelloController {
 
     public ChoiceBox<String> sizeButton;
+    public Button saveButton;
     ObservableList<String> shapeSizes = FXCollections.observableArrayList("SMALL", "MEDIUM", "LARGE");
     public ChoiceBox<String> shapeButton;
     ObservableList<String> shapes = FXCollections.observableArrayList("Circle", "Square");
@@ -23,21 +32,19 @@ public class HelloController {
     public Button selectButton;
     public Canvas canvas;
 
+    ObservableList<Shapes> shapesOnCanvas = FXCollections.observableArrayList();
+
     public Boolean selected = false;
-    public Shapes shapes2;
+    public Shapes lastCustomizedShape;
     int shapesInt;
     public boolean customizeFigure = false;
-
-
-    public Shapes lastShape;
+    public Shapes lastCreatedShape;
     public int listLocationLastShape;
-
     public  boolean shapeChanged;
+    public boolean shapeCreated;
+    public Stage stage;
+    public GraphicsContext context;
 
-
-
-
-    ObservableList<Shapes> shapesOnCanvas = FXCollections.observableArrayList();
 
     canvasMyAnimation canvasMyAnimation = new canvasMyAnimation() {
         float time;
@@ -54,16 +61,16 @@ public class HelloController {
 
 
 
-    public GraphicsContext context;
 
 
     public void initialize() {
 
         sizeButton.setItems(shapeSizes);
-        //sizeButton.setValue(SMALL); //optional
+        sizeButton.setValue("SMALL"); //optional
 
         shapeButton.setItems(shapes);
-        //shapeButton.setValue("Circle"); //optional
+        shapeButton.setValue("Circle"); //optional
+
 
         context = canvas.getGraphicsContext2D();
         canvas.setFocusTraversable(true);
@@ -77,9 +84,65 @@ public class HelloController {
         context.setFill(Color.ALICEBLUE);
         context.fillRect(0,0,600,450);
 
-
         for (var segment : shapesOnCanvas) {
             fillShape(segment);
+        }
+    }
+
+
+
+
+
+    public void saveFile() {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Save as");
+        fileChooser.setInitialDirectory(new File(System.getProperty("user.home")));
+        fileChooser.getExtensionFilters().clear();
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("SVG","*.svg"));
+
+        File filePath = fileChooser.showSaveDialog(stage);
+
+        if(filePath != null) {
+            convertingImages(filePath.toPath());
+        }
+
+    }
+
+    public void convertingImages(Path file){
+        StringBuffer outPut = new StringBuffer();
+
+        outPut.append("<svg width=\"600\" height=\"500\" xmlns=\"http://www.w3.org/2000/svg\">");
+
+        for (var s : shapesOnCanvas) {
+
+            if(s.getName().equals("Circle")) {
+                outPut.append("<circle cx=\"" + s.getPosition().x() +
+                        "\" cy=\"" + s.getPosition().y() +
+                        "\" r=\"" + s.sizeToInt() +
+                        "\" fill=\"#" +
+                        s.getColor().toString().substring(2,8) +
+                        "\" />");
+
+            }
+            if (s.getName().equals("Square")) {
+                outPut.append("<rect x=\"" + (s.getPosition().x() - s.sizeToInt()) +
+                        "\" y=\"" + (s.getPosition().y() - s.sizeToInt()) +
+                        "\" width=\"" + (s.sizeToInt() * 2) +
+                        "\" height=\"" + (s.sizeToInt() * 2) +
+                        "\" fill=\"#" +
+                        s.getColor().toString().substring(2,8) +
+                        "\" />");
+            }
+
+
+
+        }
+        outPut.append("</svg>");
+
+        try {
+            Files.writeString(file,outPut.toString());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
 
     }
@@ -87,17 +150,17 @@ public class HelloController {
 
     public void selectShape(MouseEvent mouseEvent) {
 
+
         if (selected) {
 
             selected = false;
             customizeFigure = false;
             selectButton.setText("Select");
 
-            if(shapes2 != null) {
-                updateShapeAfterChanges(shapes2);
+
+            if(lastCustomizedShape != null) {
+                updateShapeAfterChanges(lastCustomizedShape);
             }
-            //colorButton.valueProperty().unbind();
-            //sizeButton.valueProperty().unbind();
 
 
         }else {
@@ -110,8 +173,14 @@ public class HelloController {
     public void canvasClicked(MouseEvent mouseEvent) {
 
 
+        double valueX = mouseEvent.getX();
+        double valueY = mouseEvent.getY();
+
+
         if (!selected) {
-            makeShape(mouseEvent);
+            Color color = colorButton.getValue();
+            String size = sizeButton.getValue();
+            makeShape(valueX,valueY,color,size);
         }
 
 
@@ -121,26 +190,27 @@ public class HelloController {
 
             new Thread(() -> {
                 Platform.runLater(() ->
-                        checkTheArea(mouseEvent));
+                        checkTheArea(valueX, valueY));
             }).start();
 
         }
 
     }
 
-    public void checkTheArea(MouseEvent mouseEvent) {
+    public void checkTheArea(double x, double y) {
 
-        shapes2 = shapeForChange(mouseEvent);
+        lastCustomizedShape = shapeForChange(x, y);
 
-        if(shapes2 != null) {
-            if(shapes2.getName().equals("Circle")) {
-                lastShape = cloneCircle((Circle) shapes2);
+        if(lastCustomizedShape != null) {
+            if(lastCustomizedShape.getName().equals("Circle")) {
+                lastCreatedShape = cloneCircle((Circle) lastCustomizedShape);
             }
-            else if (shapes2.getName().equals("Square")) {
-                lastShape = cloneSquare((Square) shapes2);
+            else if (lastCustomizedShape.getName().equals("Square")) {
+                lastCreatedShape = cloneSquare((Square) lastCustomizedShape);
             }
 
             shapeChanged = true;
+            shapeCreated = false;
 
         }else {
             selected = false;
@@ -148,17 +218,13 @@ public class HelloController {
             selectButton.setText("Select");
         }
 
-
-
-        System.out.println(shapes2);
-
     }
 
-    private Shapes shapeForChange(MouseEvent mouseEvent) {
+    private Shapes shapeForChange(double x, double y) {
 
         for (int i = shapesOnCanvas.size() - 1; i >= 0 ; i--) {
 
-            if (shapesOnCanvas.get(i).checkArea(mouseEvent.getX(), mouseEvent.getY())) {
+            if (shapesOnCanvas.get(i).checkArea(x, y)) {
                 shapeButton.setValue(shapesOnCanvas.get(i).getName());
                 sizeButton.setValue(shapesOnCanvas.get(i).getShapeSize());
                 colorButton.setValue(shapesOnCanvas.get(i).getColor());
@@ -170,10 +236,8 @@ public class HelloController {
                 return shapesOnCanvas.get(i);
             }
 
-
         }
 
-        System.out.println("Missade en figur");
         return null;
     }
 
@@ -206,8 +270,11 @@ public class HelloController {
     }
 
     private void fillSmallSquare(Square square) {
+
         context.setFill(square.getColor());
         context.fillRect(square.getPosition().x() - 25, square.getPosition().y() - 25, 50, 50);
+
+
     }
 
     private void fillMediumSquare(Square square) {
@@ -236,34 +303,46 @@ public class HelloController {
     }
 
 
-    public void makeShape(MouseEvent mouseEvent) {
+    public void makeShape(double x, double y, Color color, String size) {
 
         if((sizeButton.getValue() != null) && (shapeButton.getValue() != null)) {
 
             if (shapeButton.getValue().equals("Circle")) {
-                makeCircle(mouseEvent.getX(), mouseEvent.getY());
+                makeCircle(x, y, color, size);
             }
             if (shapeButton.getValue().equals("Square")) {
-                makeSquare(mouseEvent.getX(), mouseEvent.getY());
+                makeSquare(x, y, color, size);
             }
+
         }
     }
 
-    public void makeSquare(double x, double y) {
+    public void makeSquare(double x, double y, Color color, String size) {
         Square square = new Square(new Position(x, y));
-        square.setColor(colorButton.getValue());
-        square.setShapeSize(sizeButton.getValue());
-        //fillShape(square);
-        shapesOnCanvas.add(square);
+        square.setColor(color);
+        square.setShapeSize(size);
 
+        shapesOnCanvas.add(square);
+        lastCreatedShape = cloneSquare(square);
+
+        listLocationLastShape = shapesOnCanvas.size() - 1;
+        shapeCreated = true;
+        shapeChanged = false;
     }
 
-    public void makeCircle(double x, double y) {
+    public void makeCircle(double x, double y, Color color, String size) {
         Circle circle = new Circle(new Position(x, y));
-        circle.setColor(colorButton.getValue());
-        circle.setShapeSize(sizeButton.getValue());
-        //fillShape(circle);
+        circle.setColor(color);
+        circle.setShapeSize(size);
+
         shapesOnCanvas.add(circle);
+        lastCreatedShape = cloneCircle(circle);
+
+
+        listLocationLastShape = shapesOnCanvas.size() - 1;
+        shapeCreated = true;
+        shapeChanged = false;
+
     }
 
 
@@ -271,28 +350,10 @@ public class HelloController {
 
         if(shapes.getName().equals("Circle")) {
             shapesOnCanvas.add(shapesInt,cloneCircle((Circle) shapes));
-
-            //---------
-            /*lastShape = shapes;
-            //lastShape = shapesOnCanvas.get(listLocation + 1); Måste hamna tidigare innan förändring sker
-            listLocationLastShape = listLocation;
-            shapeChanged = true;*/
-            //---------
-
-
             shapesOnCanvas.remove(shapesInt + 1);
         }
         if(shapes.getName().equals("Square")) {
             shapesOnCanvas.add(shapesInt,cloneSquare((Square) shapes));
-
-            //---------
-            /*lastShape = shapes;
-            //lastShape = shapesOnCanvas.get(listLocation + 1);
-            listLocationLastShape = listLocation;
-            shapeChanged = true;*/
-            //---------
-
-
             shapesOnCanvas.remove(shapesInt + 1);
         }
     }
@@ -325,68 +386,67 @@ public class HelloController {
 
     public void colorPicker(ActionEvent actionEvent) {
 
-        /*if((!customizeFigure) && (shapes2 != null)) {
-            colorButton.valueProperty().unbindBidirectional((shapes2.colorProperty()));
-        }*/
-
-
-        if ((customizeFigure) && (shapes2 != null)) {
-            shapes2.setColor(colorButton.getValue());
-            colorButton.valueProperty().bindBidirectional(shapes2.colorProperty());
-
-            //shapes2.colorProperty().bind(colorButton.valueProperty());
+        if ((customizeFigure) && (lastCustomizedShape != null)) {
+            lastCustomizedShape.setColor(colorButton.getValue());
+            colorButton.valueProperty().bindBidirectional(lastCustomizedShape.colorProperty());
         }
-
-
-        //shapesOnCanvas.get(shapesOnCanvas.size()-1).setColor(colorButton.getValue());
-
-
     }
 
     public void sizePicker(ActionEvent actionEvent) {
 
+        if ((customizeFigure) && (lastCustomizedShape != null)) {
+            lastCustomizedShape.setShapeSize(sizeButton.getValue());
+            sizeButton.valueProperty().bindBidirectional(lastCustomizedShape.shapeSizeProperty());
 
-        /*if((!customizeFigure) && (shapes2 != null)) {
-            sizeButton.valueProperty().unbindBidirectional(shapes2.shapeSizeProperty());
-        }*/
-
-        if ((customizeFigure) && (shapes2 != null)) {
-            shapes2.setShapeSize(sizeButton.getValue());
-            sizeButton.valueProperty().bindBidirectional(shapes2.shapeSizeProperty());
-
-
-
-            //shapes2.colorProperty().bind(colorButton.valueProperty());
         }
 
     }
 
+
+
+
     public void undoClicked(MouseEvent mouseEvent) {
 
+        undoShape();
+    }
+
+
+
+    public void undoShape() {
+
+        if(!selected) {
+            undoChangedShape();
+            undoNewShape();
+        }
+    }
+
+    public void undoChangedShape() {
 
         if(shapeChanged) {
 
-            shapesOnCanvas.add(listLocationLastShape,lastShape);
+            shapesOnCanvas.add(listLocationLastShape, lastCreatedShape);
             shapesOnCanvas.remove(listLocationLastShape + 1);
-            colorButton.setValue(lastShape.getColor());
-            sizeButton.setValue(lastShape.getShapeSize());
+            colorButton.setValue(lastCreatedShape.getColor());
+            sizeButton.setValue(lastCreatedShape.getShapeSize());
 
             shapeChanged = false;
+        }
+    }
 
-            //kul grej  sätt 1 eller 0
-            //undoButton.setOpacity(1/0);
+    public void undoNewShape() {
+        if (shapeCreated) {
 
-
-
-        } else if (!shapeChanged) {
-
-
-
-
+            shapesOnCanvas.remove(listLocationLastShape);
+            shapeCreated= false;
 
         }
+    }
 
+    public void saveProgram(MouseEvent mouseEvent) {
 
+        if(shapesOnCanvas.size() > 0) {
+            saveFile();
+        }
     }
 
 

@@ -11,11 +11,6 @@ public class Circle extends Shapes{
     private String name = "Circle";
 
 
-/*    public Circle(Position position, ShapeSize size, Color color) {
-        super(position, size, color);
-    }*/
-
-
     public Circle(Position position) {
         super(position);
     }
@@ -93,23 +88,33 @@ public class Circle extends Shapes{
 
         if(super.getShapeSize().equals("SMALL")) {
             circleArea = 25;
-        }
-        if(super.getShapeSize().equals("MEDIUM")) {
+        }else if(super.getShapeSize().equals("MEDIUM")) {
             circleArea = 50;
-        }
-        if(super.getShapeSize().equals("LARGE")) {
+        }else if(super.getShapeSize().equals("LARGE")) {
             circleArea = 75;
         }
 
 
         if(Math.pow((x - super.getPosition().x()), 2) + Math.pow((y - super.getPosition().y()) , 2) <= circleArea * circleArea) {
-            System.out.println("YESYESYES");
             answer = true;
         }
 
 
         return answer;
     }
+
+    /*public int sizeToInt(){
+        int circleArea = 0;
+
+        if(this.getShapeSize().equals("SMALL")) {
+            circleArea = 25;
+        }else if(this.getShapeSize().equals("MEDIUM")) {
+            circleArea = 50;
+        }else if(this.getShapeSize().equals("LARGE")) {
+            circleArea = 75;
+        }
+        return circleArea;
+    }*/
 
 
 
